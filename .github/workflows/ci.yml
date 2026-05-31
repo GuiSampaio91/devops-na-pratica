@@ -1,8 +1,9 @@
 name: CI - DevOps na Prática
 
-# Pipeline de Integração Contínua disparado a cada push e Pull Request
-# para a branch principal. Executa, em paralelo, três jobs: lint, test e
-# validação dos scripts Terraform (Infraestrutura como Código).
+# Pipeline de Integração Contínua disparado a cada push e Pull Request para a
+# branch principal (e manualmente via workflow_dispatch). São quatro jobs:
+# 'lint' e 'terraform-validate' começam em paralelo; 'test' roda após o 'lint';
+# e 'build' é executado por último, dependendo de 'test' e 'terraform-validate'.
 
 on:
   push:

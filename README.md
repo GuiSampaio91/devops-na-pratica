@@ -56,12 +56,13 @@ flask --app app.main run            # sobe a API em http://localhost:5000
 ## Pipeline de CI
 
 O workflow `.github/workflows/ci.yml` é disparado em todo `push` e `pull_request`
-para a branch `main`, executando quatro jobs em sequência:
+para a branch `main` (e manualmente via `workflow_dispatch`), executando quatro
+jobs encadeados por dependências (`needs`):
 
 1. **lint** — análise estática com `flake8`.
-2. **test** — testes unitários com `pytest` exigindo cobertura mínima de 80%.
-3. **terraform-validate** — `terraform fmt`, `init` e `validate` dos scripts de IaC.
-4. **build** — empacota a aplicação e publica o artefato `.tar.gz`.
+2. **test** — testes unitários com `pytest` exigindo cobertura mínima de 80% (depende do `lint`).
+3. **terraform-validate** — `terraform fmt`, `init` e `validate` dos scripts de IaC (roda em paralelo com o `lint`).
+4. **build** — empacota a aplicação e publica o artefato `.tar.gz` (depende de `test` e `terraform-validate`).
 
 ## Infraestrutura como Código
 
