@@ -1,0 +1,15 @@
+# Sobe a API em produção a partir da imagem publicada no ghcr.io
+# (não faz build local — usa a imagem entregue pelo pipeline de CD).
+# Uso: IMAGE_TAG=latest docker compose -f docker-compose.prod.yml up -d
+services:
+  api:
+    image: ghcr.io/guisampaio91/devops-na-pratica:${IMAGE_TAG:-latest}
+    container_name: todo-api
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:5000/health', timeout=2).status == 200 else 1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
