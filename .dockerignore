@@ -1,0 +1,22 @@
+# Controle de versão e CI
+.git
+.github
+
+# Infraestrutura e testes não entram na imagem de runtime
+infra
+tests
+.flake8
+requirements-dev.txt
+
+# Artefatos do Python
+__pycache__
+*.py[cod]
+.venv
+venv
+.pytest_cache
+.coverage
+htmlcov
+
+# Documentação e deploy
+*.md
+deploy
