@@ -1,4 +1,4 @@
-# Infraestrutura como Código — Terraform
+# Infraestrutura como Código (Terraform)
 
 Este diretório contém os scripts Terraform que provisionam a infraestrutura
 mínima para hospedar a API de Tarefas na AWS.

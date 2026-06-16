@@ -1,8 +1,8 @@
-# DevOps na Prática — API de Tarefas
+# DevOps na Prática - API de Tarefas
 
 [![CI/CD](https://github.com/GuiSampaio91/devops-na-pratica/actions/workflows/ci.yml/badge.svg)](https://github.com/GuiSampaio91/devops-na-pratica/actions/workflows/ci.yml)
 
-Projeto da disciplina **DevOps na Prática** (Sistemas de Informação — PUCRS Online).
+Projeto da disciplina **DevOps na Prática** (Sistemas de Informação, PUCRS Online).
 
 A aplicação é uma **API REST de Lista de Tarefas** em Python/Flask, usada como
 objeto para automatizar todo o ciclo de vida do software: integração contínua
@@ -109,4 +109,4 @@ apropriado, e fazem o bootstrap da aplicação via `user_data.sh`. Detalhes em
 
 ## Autor
 
-**Guilherme Sampaio** — Sistemas de Informação, PUCRS Online.
+**Guilherme Sampaio** - Sistemas de Informação, PUCRS Online.

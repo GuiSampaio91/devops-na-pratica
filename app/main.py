@@ -14,10 +14,10 @@ from flask import Flask, jsonify, request
 
 
 def create_app() -> Flask:
-    """Application factory — facilita o uso em testes."""
+    """Application factory que facilita o uso em testes."""
     app = Flask(__name__)
 
-    # Persistência em memória — suficiente para fins didáticos.
+    # Persistência em memória, suficiente para fins didáticos.
     tasks: Dict[int, Dict] = {}
     next_id: Dict[str, int] = {"value": 1}
 
@@ -75,7 +75,7 @@ def create_app() -> Flask:
     return app
 
 
-# Instância default — usada pelo gunicorn em produção (gunicorn app.main:app).
+# Instância default, usada pelo gunicorn em produção (gunicorn app.main:app).
 app = create_app()
 
 

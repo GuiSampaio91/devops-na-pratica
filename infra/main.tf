@@ -1,5 +1,5 @@
 ###############################################################################
-# DevOps na Prática — Fase 1
+# DevOps na Prática - Fase 1
 # Provisionamento da infraestrutura mínima para hospedar a API de Tarefas
 # em uma instância EC2 t2.micro (free tier) na AWS, com Security Group
 # liberando SSH (22), HTTP (80) e a porta da aplicação (5000).
@@ -20,7 +20,7 @@ provider "aws" {
   region = var.aws_region
 }
 
-# AMI oficial do Ubuntu 22.04 LTS (Jammy) — mantida pela Canonical.
+# AMI oficial do Ubuntu 22.04 LTS (Jammy), mantida pela Canonical.
 data "aws_ami" "ubuntu" {
   most_recent = true
   owners      = ["099720109477"] # Canonical
@@ -36,7 +36,7 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# VPC default — suficiente para fins didáticos.
+# VPC default, suficiente para fins didáticos.
 data "aws_vpc" "default" {
   default = true
 }
