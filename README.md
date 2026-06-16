@@ -1,14 +1,13 @@
-# DevOps na Prática — Fase 1: Configuração e Automação Inicial
+# DevOps na Prática — API de Tarefas
 
-[![CI](https://github.com/GuiSampaio91/devops-na-pratica/actions/workflows/ci.yml/badge.svg)](https://github.com/GuiSampaio91/devops-na-pratica/actions/workflows/ci.yml)
+[![CI/CD](https://github.com/GuiSampaio91/devops-na-pratica/actions/workflows/ci.yml/badge.svg)](https://github.com/GuiSampaio91/devops-na-pratica/actions/workflows/ci.yml)
 
-Repositório referente à **Fase 1** do projeto da disciplina **DevOps na Prática**
-do curso de Sistemas de Informação (PUCRS Online).
+Projeto da disciplina **DevOps na Prática** (Sistemas de Informação — PUCRS Online).
 
-A aplicação utilizada como objeto do projeto é uma **API REST de Lista de
-Tarefas** escrita em Python/Flask, cujo ciclo de vida (build, teste, validação
-de infra e empacotamento) é totalmente automatizado por meio de
-**GitHub Actions** e **Terraform**.
+A aplicação é uma **API REST de Lista de Tarefas** em Python/Flask, usada como
+objeto para automatizar todo o ciclo de vida do software: integração contínua
+(lint, testes, validação de IaC), análise de segurança, containerização com
+Docker e entrega contínua da imagem para o GitHub Container Registry.
 
 ---
 
@@ -25,8 +24,13 @@ devops-na-pratica/
 │   ├── variables.tf
 │   ├── outputs.tf
 │   └── user_data.sh
-├── .github/workflows/    # Pipeline de Integração Contínua
+├── deploy/               # Deploy com containers
+│   ├── docker-compose.prod.yml
+│   └── deploy.sh
+├── .github/workflows/    # Pipeline de CI/CD (GitHub Actions)
 │   └── ci.yml
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 ├── requirements-dev.txt
 └── README.md
@@ -34,12 +38,20 @@ devops-na-pratica/
 
 ## Executando localmente
 
+Com Python:
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 pytest                              # roda todos os testes
 flask --app app.main run            # sobe a API em http://localhost:5000
+```
+
+Com Docker:
+
+```bash
+docker compose up --build          # sobe a API em http://localhost:5000
 ```
 
 ## Endpoints
@@ -53,22 +65,47 @@ flask --app app.main run            # sobe a API em http://localhost:5000
 | PUT    | `/tasks/{id}`     | Atualiza título / status        |
 | DELETE | `/tasks/{id}`     | Remove a tarefa                 |
 
-## Pipeline de CI
+## Pipeline de CI/CD
 
-O workflow `.github/workflows/ci.yml` é disparado em todo `push` e `pull_request`
-para a branch `main` (e manualmente via `workflow_dispatch`), executando quatro
-jobs encadeados por dependências (`needs`):
+O workflow `.github/workflows/ci.yml` roda em todo `push` e `pull_request` para a
+branch `main` (e manualmente via `workflow_dispatch`):
 
-1. **lint** — análise estática com `flake8`.
-2. **test** — testes unitários com `pytest` exigindo cobertura mínima de 80% (depende do `lint`).
-3. **terraform-validate** — `terraform fmt`, `init` e `validate` dos scripts de IaC (roda em paralelo com o `lint`).
-4. **build** — empacota a aplicação e publica o artefato `.tar.gz` (depende de `test` e `terraform-validate`).
+| Job | Descrição |
+|-----|-----------|
+| `lint` | Análise estática com `flake8`. |
+| `test` | Testes com `pytest` e cobertura mínima de 80% (depende do `lint`). |
+| `terraform-validate` | `fmt`, `init` e `validate` dos scripts de IaC (paralelo ao `lint`). |
+| `security` | Build da imagem e scan de vulnerabilidades com **Trivy** (depende do `lint`). |
+| `build` | Empacota o artefato `.tar.gz` (depende de `test` e `terraform-validate`). |
+| `docker` | **Entrega Contínua**: build e push da imagem para o `ghcr.io`, só em push na `main` (depende de `test` e `terraform-validate`). |
+
+## Containerização
+
+A aplicação é empacotada por um [`Dockerfile`](Dockerfile) baseado em
+`python:3.11-slim`, rodando com gunicorn sob um usuário sem privilégios e com
+`HEALTHCHECK` apontando para `/health`. A cada push na `main`, o pipeline publica
+a imagem em:
+
+```
+ghcr.io/guisampaio91/devops-na-pratica:latest
+```
+
+## Deploy
+
+Os scripts em [`deploy/`](deploy/) sobem o container a partir da imagem publicada
+(sem build local):
+
+```bash
+cd deploy
+./deploy.sh                  # usa a tag 'latest'
+./deploy.sh <sha-do-commit>  # usa uma tag específica
+```
 
 ## Infraestrutura como Código
 
-Os scripts em `infra/` provisionam uma EC2 `t2.micro` na AWS, com Security
-Group apropriado, e fazem o bootstrap da aplicação via `user_data.sh`.
-Detalhes em [`infra/README.md`](infra/README.md).
+Os scripts em `infra/` provisionam uma EC2 `t2.micro` na AWS, com Security Group
+apropriado, e fazem o bootstrap da aplicação via `user_data.sh`. Detalhes em
+[`infra/README.md`](infra/README.md).
 
 ## Autor
 
